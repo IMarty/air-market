@@ -1,0 +1,131 @@
+<!--
+Few imports
+ -->
+<link rel="import" href="../../../iron-icons/iron-icons.html">
+
+<link rel="import" href="../../../paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../../../paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../paper-item/paper-item.html">
+<link rel="import" href="../../../paper-button/paper-button.html">
+<link rel="import" href="../../../paper-menu/paper-menu.html">
+<link rel="import" href="../../../paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../../paper-toolbar/paper-ripple.html">
+<link rel="import" href="../../../iron-ajax/iron-ajax.html">
+<link rel="import" href="plane-card.html">
+<link rel="import" href="plane-content.html">
+<!--
+THE Application
+ -->
+<dom-module id="air-app">
+  
+  <!-- Some style -->
+  <link rel="import" type="css" href="air-app.css">
+
+  <template>
+    
+    <paper-drawer-panel id="navDrawerPanel" responsive-width="1280px">
+
+      <div class="nav" drawer>
+        <!-- Navigation Content -->
+        <img src = "../img/airplanes.svg"></img>
+        <paper-menu class="list" on-iron-activate="_listTap">
+            <paper-item>
+              <paper-icon-button icon="icons:apps" paper-drawer-toggle></paper-icon-button>
+              MainStore
+            </paper-item>
+          </paper-menu>
+      </div>
+
+      <paper-drawer-panel id="mainDrawerPanel" class="main-drawer-panel" main responsive-width="800px"
+          drawer-width="[[_computeListWidth(_isMobile)]]" drawer-toggle-attribute="list-toggle"
+          narrow="{{_isMobile}}">
+        
+        <paper-header-panel class="list-panel" drawer>
+          <!-- List Toolbar -->
+          <paper-toolbar>
+            <paper-icon-button icon="menu" paper-drawer-toggle>MainStore</paper-icon-button>
+            <h1> Air-market Beta </h1>
+          </paper-toolbar>
+
+          <!-- List -->
+          <paper-menu class="list" on-iron-activate="_listTap">
+            <!-- data import -->
+            <iron-ajax auto
+                url="../datas/planes.json"
+                handle-as="json"
+                last-response="{{ajaxResponse}}">
+            </iron-ajax>
+              <!-- Planes list -->
+              <template is="dom-repeat" items="[[ajaxResponse]]">
+                <!-- plane-card item -->
+                <plane-card heading="[[item.title]]" 
+                        image="[[item.img]]"
+                        on-click="planeSelected">
+                    <div class="card-content">
+                      <span>[[item.desc]]</span> 
+                    </div>
+                <paper-ripple></paper-ripple>    
+                </plane-card>
+              </template>
+          </paper-menu>
+
+        </paper-header-panel>
+
+        <paper-header-panel class="content-panel" main>
+          <!-- Main Content Toolbar -->
+          <paper-toolbar>
+            <paper-icon-button icon="arrow-back" list-toggle></paper-icon-button>
+            <h3><span>[[selected_title]]</span></h3>
+          </paper-toolbar>
+
+          <!-- Main Content -->
+          <div class="content">
+            <!-- plane-content item -->
+            <plane-content heading="[[selected_title]]" 
+                        image="[[selected_img]]">
+                    <div class="card-content">
+                      Excogitatum est super his, ut homines quidam ignoti, vilitate ipsa parum cavendi ad colligendos rumores per Antiochiae latera cuncta destinarentur relaturi quae audirent. hi peragranter et dissimulanter honoratorum circulis adsistendo pervadendoque divites domus egentium habitu quicquid noscere poterant vel audire latenter intromissi per posticas in regiam nuntiabant, id observantes conspiratione concordi, ut fingerent quaedam et cognita duplicarent in peius, laudes vero supprimerent Caesaris, quas invitis conpluribus formido malorum inpendentium exprimebat. 
+                    </div>
+                      <div class="card-actions">
+            						<paper-button onclick="">Buy IT Now !</paper-button>
+            						<paper-button onclick="">Add to favorite</paper-button>
+            					</div>
+            </plane-content>
+          </div>
+        </paper-header-panel>
+      </paper-drawer-panel>
+    </paper-drawer-panel>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'air-app',
+      
+      selected_title : String, 
+      selected_img : String, 
+      selected_desc : String, 
+      
+      ready: function() {
+        this.selected_title = "That's a nice plane";
+        this.selected_img   = "img/plane5.jpg";
+      }, 
+      _computeListWidth: function(isMobile) {
+        // when in mobile screen size, make the list be 100% width to cover the whole screen
+        return isMobile ? '100%' : '33%';
+      },
+      _listTap: function(e) {
+        this.$.mainDrawerPanel.closeDrawer();
+        
+      }, 
+      planeSelected: function(e) {
+        var model = e.model;
+        this.selected_title = model.item.title;
+        this.selected_img   = model.item.img;
+        this.selected_desc  = model.item.desc;
+      }
+    });
+  </script>
+
+</dom-module>
